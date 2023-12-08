@@ -1,10 +1,11 @@
 class Hero():
-    def __init__(self, name, race, birth, death):
+    def __init__(self, name, race, url=""):
         self.name = name
         self.race = race
-        self.birth = birth
-        self.death = death
+        self.url = url
 
     def __str__(self):
-        return f"This is {self.name} a {self.race} from {self.origin}. {self.story}"
+        if not self.url:
+            return f"\nThis is {self.name}, a {self.race}. I have no memory of this hero\n"
+        return f"\nThis is {self.name} a {self.race}. You could learn more about this hero in: \n{self.url}\n"
 

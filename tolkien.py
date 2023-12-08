@@ -19,9 +19,15 @@ def main():
     # Decision maker if there is more than one resulto for the search
     if data["total"] > 1:
         number = get_decision(data)
-        print(json.dumps(data['docs'][number],indent=1))
+        if not "wikiUrl" in data['docs'][number]:
+            data['docs'][number]["wikiUrl"] = ""
+        hero = Hero(data['docs'][number]["name"], data['docs'][number]["race"], data['docs'][number]["wikiUrl"])
     else:
-        print(json.dumps(data['docs'][0],indent=1))
+        if not "wikiUrl" in data['docs'][0]:
+            data['docs'][number]["wikiUrl"] = ""
+        hero = Hero(data['docs'][0]["name"], data['docs'][0]["race"], data['docs'][0]["wikiUrl"])
+
+    print(hero)
 
 
 def get_decision(data):
@@ -34,7 +40,7 @@ def get_decision(data):
     print("\n")
     while True:
         number = int(input("Enter the number of the character you want to search for: "))
-        if number in range(len(results)):
+        if (number -1) in range(len(results)):
             number -= 1
             break
         else:
