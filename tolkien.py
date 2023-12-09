@@ -1,34 +1,44 @@
+import sys
 import requests
 import json
 from hero import Hero
 
 def main():
-    name = input("Name: ")
-    while True:
-        if not name:
-            name = input("Name: ")
-            continue
-        else:
-            break
+    print(
+        "\nWelcome to Tolkienpy, a modest programme to find character from the J.R.R Tolkien's universe.\n"
+        )
+    name = get_name()
 
     data = requests.get(f"https://the-one-api.dev/v2/character?name=/^{name}.*/i", headers={"Authorization": "Bearer EUO-leXY6aL0ncP9-wmF"})
     data = data.json()
 
-    # print(json.dumps(data,indent=2))
-
-    # Decision maker if there is more than one resulto for the search
-    if data["total"] > 1:
-        number = get_decision(data)
-        if not "wikiUrl" in data['docs'][number]:
-            data['docs'][number]["wikiUrl"] = ""
-        hero = Hero(data['docs'][number]["name"], data['docs'][number]["race"], data['docs'][number]["wikiUrl"])
-    else:
-        if not "wikiUrl" in data['docs'][0]:
-            data['docs'][number]["wikiUrl"] = ""
-        hero = Hero(data['docs'][0]["name"], data['docs'][0]["race"], data['docs'][0]["wikiUrl"])
-
+    hero = get_hero(data)
     print(hero)
 
+def get_hero(data):
+    try:
+        if data["total"] > 1:
+            number = get_decision(data)
+            if not "wikiUrl" in data['docs'][number]:
+                data['docs'][number]["wikiUrl"] = ""
+            return Hero(data['docs'][number]["name"], data['docs'][number]["race"], data['docs'][number]["wikiUrl"])
+            
+        else:
+            number = 0
+            if not "wikiUrl" in data['docs'][number]:
+                data['docs'][number]["wikiUrl"] = ""
+            return Hero(data['docs'][number]["name"], data['docs'][number]["race"], data['docs'][number]["wikiUrl"])
+    except IndexError:
+        sys.exit("\nI have no memory of that hero\n")
+
+
+def get_name():
+    while True:
+        name = input("Enter a hero name: ")
+        if not name:
+            continue
+        else:
+            return name
 
 def get_decision(data):
     results = []
@@ -37,9 +47,8 @@ def get_decision(data):
         results.append(f"{result+1}. {data['docs'][result]['name']}")
     for _ in results:
         print(_)
-    print("\n")
     while True:
-        number = int(input("Enter the number of the character you want to search for: "))
+        number = int(input("\nEnter the number of the character you want to search for: "))
         if (number -1) in range(len(results)):
             number -= 1
             break
