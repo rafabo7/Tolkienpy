@@ -6,6 +6,6 @@ class Hero():
 
     def __str__(self):
         if not self.url:
-            return f"\nThis is {self.name}, a {self.race}, your hero. I have no memory of this hero.\n"
+            return f"\nThis is {self.name}, a {self.race.lower()}, your hero. I have no memory of this hero.\n"
         return f"\nThis is {self.name}, a {self.race}, your hero. You can learn more about this hero in: \n{self.url}\n"
 
