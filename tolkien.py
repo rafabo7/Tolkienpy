@@ -6,23 +6,18 @@ from hero import Hero
 
 def main():
     print(
-        "\nWelcome to Tolkienpy, a modest textual game inspired in the J.R.R Tolkien's universe.\n"
+        "\nWelcome to Tolkienpy, a modest textual mini-game inspired by J.R.R. Tolkien's universe, which will give you the minimal information about any character from the books and tell you whether he/she can beat the Balrog or not.\n"
         )
     while True:
         name = get_name()
-
-        data = requests.get(f"https://the-one-api.dev/v2/character?name=/^{name}.*/i", headers={"Authorization": "Bearer EUO-leXY6aL0ncP9-wmF"})
-        data = data.json()
-
-        hero = get_hero(data)
+        hero = get_hero(name)
         print(hero, "\n")
-        answer = input("This is your hero. Are you ready to continue?")
+        answer = input("This is your hero. Are you ready to continue? (y/n)")
         if matches := re.match(r"^ye?s?$", answer.strip(), re.IGNORECASE):
             break
         elif matches := re.match(r"^no?$", answer.strip(), re.IGNORECASE):
             continue
-        # else:
-        #     print('Sorry, I did not understand that. Please type "yes" or "no".')
+        
 
     
 
@@ -50,16 +45,19 @@ def main():
                   `:  `"""'  :'
     '''
     print(
-        "Suddenly a Balrog appeared...\n",
+        "\nSuddenly a Balrog appeared...\n",
         balrog,
-        "\n'ROARR!!! \nIt said'",
+        "\n'ROARR!!!\n \nIt said'\n",
         )
 
-    response = input("What do you say? ")
+    response = input("\nWhat do you say? ")
     print(get_result(response, hero))
 
 
-def get_hero(data):
+def get_hero(name):
+    data = requests.get(f"https://the-one-api.dev/v2/character?name=/^{name}.*/i", headers={"Authorization": "Bearer EUO-leXY6aL0ncP9-wmF"})
+    data = data.json()
+
     try:
         if data["total"] > 1:
             number = get_decision(data)
@@ -89,15 +87,21 @@ def get_decision(data):
     print(f"More than one result:\n")
     for result in range(data["total"]):
         results.append(f"{result+1}. {data['docs'][result]['name']}")
-    for _ in results:
-        print(_)
+    
     while True:
-        number = int(input("\nEnter the number of the character you want to search for: "))
-        if (number -1) in range(len(results)):
-            number -= 1
-            break
-        else:
-            continue
+        for _ in results:
+            print(_)
+        try:
+            number = int(input("\nEnter the number of the character you want to search for: "))
+            if (number -1) in range(len(results)):
+                number -= 1
+                break
+            else:
+                continue
+        except ValueError:
+            print("\nThat is not a valid entry.\nPlease enter a number.\n")
+            pass
+        
     return number
 
 def get_result(response, hero):
